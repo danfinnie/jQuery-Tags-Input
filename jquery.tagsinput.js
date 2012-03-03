@@ -201,6 +201,12 @@
 			options.delimiters = [options.delimiter];
 			delete options['delimiter'];
 		}
+
+      // selectBeforeDelete option implies some other ones
+      if(options.hasOwnProperty("selectBeforeDelete")
+          && options.selectBeforeDelete) {
+          options.removeWithBackspace = false;
+      }
 		
     var settings = jQuery.extend({
       interactive:true,
@@ -329,18 +335,36 @@
           			}
 				});
 				//Delete last tag on backspace
-				data.removeWithBackspace && $(data.fake_input).bind('keydown', function(event)
-				{
-					if(event.keyCode == 8 && $(this).val() == '')
-					{
-						 event.preventDefault();
-						 var last_tag = $(this).closest('.tagsinput').find('.tag:last').text();
-						 var id = $(this).attr('id').replace(/_tag$/, '');
-						 last_tag = last_tag.replace(/[\s]+x$/, '');
-						 $('#' + id).removeTag(escape(last_tag));
-						 $(this).trigger('focus');
-					}
-				});
+				if(data.removeWithBackspace) {
+               $(data.fake_input).bind('keydown', function(event) {
+                  if(event.keyCode == 8 && $(this).val() == '')
+                  {
+                      event.preventDefault();
+                      var last_tag = $(this).closest('.tagsinput').find('.tag:last').text();
+                      var id = $(this).attr('id').replace(/_tag$/, '');
+                      last_tag = last_tag.replace(/[\s]+x$/, '');
+                      $('#' + id).removeTag(escape(last_tag));
+                      $(this).trigger('focus');
+                  }
+               });
+            } else if (data.selectBeforeDelete) {
+               $(data.fake_input).bind('keydown', function(event) {
+                  if(event.keyCode == 8 && $(this).val() == '')
+                  {
+                     event.preventDefault();
+                     var last_tag = $(this).closest('.tagsinput').find('.tag:last');
+
+                     if(last_tag.hasClass("selected")) {
+                        var last_tag_text = last_tag.text().replace(/[\s]+x$/, '');
+                        var id = $(this).attr('id').replace(/_tag$/, '');
+                        $('#' + id).removeTag(escape(last_tag_text));
+                        $(this).trigger('focus');
+                     } else {
+                        last_tag.focus().addClass("selected");
+                     }
+                  }
+               });
+            }
 				$(data.fake_input).blur();
 				
 				//Removes the not_valid class when user changes the value of the fake input
