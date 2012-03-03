@@ -38,6 +38,7 @@
    }
 
 	var delimiters = new Array();
+	var canonicalDelimiter = new Array();
 	var tags_callbacks = new Array();
 	$.fn.doAutosize = function(o){
 	    var minWidth = $(this).data('minwidth'),
@@ -168,8 +169,7 @@
 				str = '';
 				for (i=0; i< old.length; i++) { 
 					if (old[i]!=value) { 
-						//TODO: Is just using the first delimiter a good idea?
-						str = str + delimiters[id][0] + old[i];
+						str = str + canonicalDelimiter[id] + old[i];
 					}
 				}
 				
@@ -216,7 +216,8 @@
       placeholderColor:'#666666',
       autosize: true,
       comfortZone: 20,
-      inputPadding: 6*2
+      inputPadding: 6*2,
+      canonicalDelimiter: ","
     },options);
 
 		this.each(function() { 
@@ -235,6 +236,7 @@
 			},settings);
 	
 			delimiters[id] = data.delimiters;
+         canonicalDelimiter[id] = data.canonicalDelimiter;
 			
 			if (settings.onAddTag || settings.onRemoveTag || settings.onChange) {
 				tags_callbacks[id] = new Array();
@@ -359,7 +361,7 @@
 	
 	$.fn.tagsInput.updateTagsField = function(obj,tagslist) { 
 		var id = $(obj).attr('id');
-		$(obj).val(tagslist.join(delimiters[id][0]));
+		$(obj).val(tagslist.join(canonicalDelimiter[id]));
 	};
 	
 	$.fn.tagsInput.importTags = function(obj,val) {			
