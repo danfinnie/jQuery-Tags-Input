@@ -20,7 +20,7 @@
    */
 	var splitMultiple = function(str, delimiters) {
 		  // TODO: Make it escape things for the regexp:
-		  return arr.split(new RegExp("[" + delimiters.join() + "]"));
+		  return str.split(new RegExp("[" + delimiters.join() + "]"));
 	};
 
    /**
@@ -30,11 +30,11 @@
     * delimiter (13).
     */
    var isDelimiter = function(str, delimiters) {
+      var found = false;
       $.each(delimiters.concat("\r"), function(i, val) {
-         if(str == val.charCodeAt(0))
-            return true;
+         found = found || str == val.charCodeAt(0);
       });
-      return false;
+      return found;
    }
 
 	var delimiters = new Array();
@@ -169,7 +169,7 @@
 				for (i=0; i< old.length; i++) { 
 					if (old[i]!=value) { 
 						//TODO: Is just using the first delimiter a good idea?
-						str = str + delimiter[id][0] + old[i];
+						str = str + delimiters[id][0] + old[i];
 					}
 				}
 				
@@ -198,7 +198,7 @@
 	$.fn.tagsInput = function(options) { 
 		// Backwards compatibility for options.delimiter
 		if(options.hasOwnProperty("delimiter")) {
-			options.delimiters = [delimiter];
+			options.delimiters = [options.delimiter];
 			delete options['delimiter'];
 		}
 		
@@ -210,7 +210,7 @@
       height:'100px',
       autocomplete: {selectFirst: false },
       'hide':true,
-			'delimiters': [','],
+		'delimiters': [','],
       'unique':true,
       removeWithBackspace:true,
       placeholderColor:'#666666',
@@ -315,7 +315,7 @@
 				}
 				// if user types a comma, create a new tag
 				$(data.fake_input).bind('keypress',data,function(event) {
-					if (isDelimeter(event.which, delimiters[id])) {
+					if (isDelimiter(event.which, delimiters[id])) {
 					    event.preventDefault();
 						if( (event.data.minChars <= $(event.data.fake_input).val().length) && (!event.data.maxChars || (event.data.maxChars >= $(event.data.fake_input).val().length)) )
 							$(event.data.real_input).addTag($(event.data.fake_input).val(),{focus:true,unique:(settings.unique)});
@@ -359,13 +359,13 @@
 	
 	$.fn.tagsInput.updateTagsField = function(obj,tagslist) { 
 		var id = $(obj).attr('id');
-		$(obj).val(tagslist.join(delimiter[id][0]));
+		$(obj).val(tagslist.join(delimiters[id][0]));
 	};
 	
 	$.fn.tagsInput.importTags = function(obj,val) {			
 		$(obj).val('');
 		var id = $(obj).attr('id');
-      var tags = splitMultiple(val, delimiters[id]) {
+      var tags = splitMultiple(val, delimiters[id]); 
 		for (i=0; i<tags.length; i++) { 
 			$(obj).addTag(tags[i],{focus:false,callback:false});
 		}
