@@ -283,7 +283,8 @@
 					$(event.data.fake_input).css('color','#000000');		
 				});
 						
-				if (settings.autocomplete_url != undefined) {
+				if (settings.autocomplete_url != undefined || 
+                  (settings.hasOwnProperty("autocomplete") && settings.autocomplete.hasOwnProperty("source"))) {
 					autocomplete_options = {source: settings.autocomplete_url};
 					for (attrname in settings.autocomplete) { 
 						autocomplete_options[attrname] = settings.autocomplete[attrname]; 
