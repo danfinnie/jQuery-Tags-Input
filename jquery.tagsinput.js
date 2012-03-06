@@ -363,7 +363,8 @@
                   if(event.keyCode == 8 && $(this).val() == '')
                   {
                      event.preventDefault();
-                     var last_tag = $(this).closest('.tagsinput').find('.tag:last');
+                     var tagsinput = $(this).closest('.tagsinput');
+                     var last_tag = tagsinput.find('.tag:last');
 
                      if(last_tag.hasClass("selected")) {
                         var last_tag_text = last_tag.text().replace(/[\s]+x$/, '');
@@ -380,6 +381,24 @@
                         $(this).closest(".tagsinput").find(".tag").removeClass("selected");
                         tagIsSelected[id] = false;
                      }
+                  }
+               });
+
+               // Select tags on click.
+               var tagsinput = document.getElementById(id+"_tagsinput");
+               $(tagsinput).delegate(".tag", "click", function(ev) {
+                  var tag = $(ev.target).closest(".tag");
+
+                  if(tag.hasClass("selected")) {
+                     $(document.getElementById(id)).removeTag(tag.text());
+                     tagIsSelected[id] = false;
+                  } else {
+                     // Select the chosen tag.  Deselect any other selected tags.
+                     if(tagIsSelected[id]) {
+                        $(tagsinput).find(".tag").removeClass("selected");
+                     }
+                     tag.addClass("selected");
+                     tagIsSelected[id] = true;
                   }
                });
             }
