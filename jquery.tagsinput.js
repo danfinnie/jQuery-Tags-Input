@@ -360,10 +360,10 @@
             } else if (data.selectBeforeDelete) {
                $(data.fake_input).bind('keydown', function(event) {
                   var id = $(this).attr('id').replace(/_tag$/, '');
+                  var tagsinput = $(this).closest('.tagsinput');
                   if(event.keyCode == 8 && $(this).val() == '')
                   {
                      event.preventDefault();
-                     var tagsinput = $(this).closest('.tagsinput');
 
                      if(tagIsSelected[id]) {
                         var selected_tag_text = tagsinput.find(".tag.selected").text().replace(/[\s]+x$/, '');
@@ -374,10 +374,15 @@
                         last_tag.focus().addClass("selected");
                      }
                      tagIsSelected[id] = !tagIsSelected[id];
+                  } else if (event.keyCode == 46 && tagIsSelected[id] && $(this).val() == "") {
+                     console.log("del");
+                     var selected_tag_text = tagsinput.find(".tag.selected").text().replace(/[\s]+x$/, '');
+                     $('#' + id).removeTag(escape(selected_tag_text));
+                     $(this).trigger('focus');
                   } else {
                      // Clear selected tags on key presses.
                      if(tagIsSelected[id]) {
-                        $(this).closest(".tagsinput").find(".tag").removeClass("selected");
+                        tagsinput.find(".tag").removeClass("selected");
                         tagIsSelected[id] = false;
                      }
                   }
