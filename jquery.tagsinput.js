@@ -364,17 +364,16 @@
                   {
                      event.preventDefault();
                      var tagsinput = $(this).closest('.tagsinput');
-                     var last_tag = tagsinput.find('.tag:last');
 
-                     if(last_tag.hasClass("selected")) {
-                        var last_tag_text = last_tag.text().replace(/[\s]+x$/, '');
-                        $('#' + id).removeTag(escape(last_tag_text));
+                     if(tagIsSelected[id]) {
+                        var selected_tag_text = tagsinput.find(".tag.selected").text().replace(/[\s]+x$/, '');
+                        $('#' + id).removeTag(escape(selected_tag_text));
                         $(this).trigger('focus');
-                        tagIsSelected[id] = false;
                      } else {
-                        tagIsSelected[id] = true;
+                        var last_tag = tagsinput.find('.tag:last');
                         last_tag.focus().addClass("selected");
                      }
+                     tagIsSelected[id] = !tagIsSelected[id];
                   } else {
                      // Clear selected tags on key presses.
                      if(tagIsSelected[id]) {
