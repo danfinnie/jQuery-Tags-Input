@@ -120,7 +120,7 @@
 				
 				if (value !='' && skipTag != true) { 
                     $('<span>').addClass('tag').append(
-                        $('<span>').text(value).append('&nbsp;&nbsp;'),
+                        $('<span>').html(value).append('&nbsp;&nbsp;'),
                         $('<a>', {
                             href  : '#',
                             title : 'Removing tag',
@@ -363,6 +363,9 @@
                      } else {
                         last_tag.focus().addClass("selected");
                      }
+                  } else {
+                     // Clear selected tags on key presses.
+                     $(this).closest('.tagsinput').find('.tag').removeClass("selected");
                   }
                });
             }
