@@ -40,6 +40,11 @@
 	var delimiters = new Array();
 	var canonicalDelimiter = new Array();
 	var tags_callbacks = new Array();
+
+   // To optimize performance, keep track of if a tag is selected and, when clearing
+   // selections, only do anything if a tag is selected.
+	var tagIsSelected = new Array();
+
 	$.fn.doAutosize = function(o){
 	    var minWidth = $(this).data('minwidth'),
 	        maxWidth = $(this).data('maxwidth'),
@@ -243,6 +248,10 @@
 	
 			delimiters[id] = data.delimiters;
          canonicalDelimiter[id] = data.canonicalDelimiter;
+
+         if(settings.selectBeforeDelete) {
+            tagIsSelected[id] = false;
+         }
 			
 			if (settings.onAddTag || settings.onRemoveTag || settings.onChange) {
 				tags_callbacks[id] = new Array();
@@ -350,6 +359,7 @@
                });
             } else if (data.selectBeforeDelete) {
                $(data.fake_input).bind('keydown', function(event) {
+                  var id = $(this).attr('id').replace(/_tag$/, '');
                   if(event.keyCode == 8 && $(this).val() == '')
                   {
                      event.preventDefault();
@@ -357,15 +367,19 @@
 
                      if(last_tag.hasClass("selected")) {
                         var last_tag_text = last_tag.text().replace(/[\s]+x$/, '');
-                        var id = $(this).attr('id').replace(/_tag$/, '');
                         $('#' + id).removeTag(escape(last_tag_text));
                         $(this).trigger('focus');
+                        tagIsSelected[id] = false;
                      } else {
+                        tagIsSelected[id] = true;
                         last_tag.focus().addClass("selected");
                      }
                   } else {
                      // Clear selected tags on key presses.
-                     $(this).closest('.tagsinput').find('.tag').removeClass("selected");
+                     if(tagIsSelected[id]) {
+                        $(this).closest(".tagsinput").find(".tag").removeClass("selected");
+                        tagIsSelected[id] = false;
+                     }
                   }
                });
             }
